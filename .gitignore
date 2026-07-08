@@ -1,0 +1,7 @@
+# Dependency directories
+lib/
+
+# Generated files
+PDF-Extractor-Standalone.html
+template.xlsx
+template.csv

@@ -1,0 +1,9 @@
+@echo off
+title PDF Extractor Local Server
+echo Starting Python Local HTTP Server on port 8000...
+start /b python -m http.server 8000
+echo Waiting for server to initialize...
+timeout /t 2 >nul
+echo Opening Microsoft Edge...
+start microsoft-edge:http://localhost:8000
+echo Done! Please keep this terminal open while using the tool.

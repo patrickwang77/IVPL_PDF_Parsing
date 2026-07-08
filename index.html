@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF 資料萃取與對照轉換工具 v2.0</title>
+    <!-- Google Fonts: Inter & Noto Sans TC -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Lucide Icons -->
+    <script src="lib/lucide.min.js"></script>
+    <!-- PDF.js from Local Lib -->
+    <script src="lib/pdf.min.js"></script>
+    <!-- SheetJS (XLSX) from Local Lib -->
+    <script src="lib/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="logo-area">
+                    <div class="pulse-icon">
+                        <i data-lucide="file-spreadsheet"></i>
+                    </div>
+                    <div>
+                        <h1>PDF Extractor & Mapper v2.0</h1>
+                        <p class="subtitle">自動提取 Packing List 與 Invoice (EI) PDF 資料，產生範本 CSV 與 XLSX 下載</p>
+                    </div>
+                </div>
+                <div class="theme-badge">
+                    <i data-lucide="shield-check"></i> 本機安全處理模式 (免上傳)
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Grid -->
+        <main class="app-grid">
+            <!-- Left Side: File Uploaders & Control -->
+            <div class="control-panel">
+                <div class="glass-card upload-section">
+                    <h2 class="card-title"><i data-lucide="files"></i> 載入來源 PDF 檔案</h2>
+                    <p class="card-desc">請拖放或點擊選擇對應的 PDF 檔案以開始萃取</p>
+                    
+                    <!-- Unified Uploader Zone -->
+                    <div class="unified-drop-zone" id="unified-drop-zone">
+                        <input type="file" id="unified-file-input" accept=".pdf" multiple style="display: none;">
+                        <div class="drop-prompt" id="drop-prompt">
+                            <div class="upload-icon-wrapper main-theme">
+                                <i data-lucide="upload-cloud"></i>
+                            </div>
+                            <h3>拖曳 Packing List 及 EI PDF 檔案至此</h3>
+                            <p class="subtext">或點擊選擇檔案 (可多選，自動分類檔案)</p>
+                        </div>
+                        
+                        <!-- Classified File List -->
+                        <div class="classified-file-list" id="classified-file-list" style="display: none;">
+                            <div class="file-item pl-item missing" id="pl-item">
+                                <div class="item-status-icon">
+                                    <i data-lucide="circle-dashed" class="icon-missing"></i>
+                                    <i data-lucide="check-circle" class="icon-success"></i>
+                                </div>
+                                <div class="item-info">
+                                    <span class="item-title">Packing List (PL) PDF</span>
+                                    <span class="item-name" id="pl-name-label">尚未載入</span>
+                                </div>
+                            </div>
+                            <div class="file-item ei-item missing" id="ei-item">
+                                <div class="item-status-icon">
+                                    <i data-lucide="circle-dashed" class="icon-missing"></i>
+                                    <i data-lucide="check-circle" class="icon-success"></i>
+                                </div>
+                                <div class="item-info">
+                                    <span class="item-title">EI (Invoice) PDF</span>
+                                    <span class="item-name" id="ei-name-label">尚未載入</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upload Controls -->
+                    <div class="upload-controls-row">
+                        <button class="btn btn-primary btn-run" id="btn-run" disabled>
+                            <i data-lucide="play"></i> Run (開始解析)
+                        </button>
+                        <button class="btn btn-secondary btn-clear" id="btn-clear-files" disabled>
+                            <i data-lucide="trash-2"></i> 清除檔案
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Process Status & Export Card -->
+                <div class="glass-card status-section">
+                    <h2 class="card-title"><i data-lucide="cpu"></i> 解析與對照狀態</h2>
+                    
+                    <div class="status-indicator">
+                        <div class="status-dot idel" id="status-dot"></div>
+                        <span id="status-text">請先載入 PDF 檔案...</span>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="progress-container" style="display: none;" id="progress-container">
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" id="progress-bar-fill"></div>
+                        </div>
+                        <div class="progress-text-row">
+                            <span id="progress-detail">準備中...</span>
+                            <span id="progress-percent">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- Info Box -->
+                    <div class="info-box" id="info-box">
+                        <i data-lucide="info" class="info-icon"></i>
+                        <p class="info-text" id="info-text">
+                            您可以拖放多個檔案。系統將依檔名自動偵測 `PL` (Packing List) 與 `EI` (Invoice) 後進行對照。每次點擊 Run 後，新資料將<strong>追加 (Append)</strong> 到右側列表中。
+                        </p>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons-group">
+                        <button class="btn btn-primary" id="btn-export-xlsx" disabled>
+                            <i data-lucide="download"></i> 下載 Excel (XLSX)
+                        </button>
+                        <button class="btn btn-secondary" id="btn-export-csv" disabled>
+                            <i data-lucide="file-spreadsheet"></i> 下載 CSV 檔 (cp950)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Live Mapped Preview -->
+            <div class="preview-panel">
+                <div class="glass-card preview-card">
+                    <div class="preview-header">
+                        <div class="preview-title-block">
+                            <h2 class="card-title"><i data-lucide="eye"></i> 轉換資料預覽</h2>
+                            <div class="preview-badge" id="preview-count" style="display: none;">0 筆資料</div>
+                        </div>
+                        <button class="btn-clear-all" id="btn-clear-preview" style="display: none;">
+                            <i data-lucide="x-circle"></i> 全部清除
+                        </button>
+                    </div>
+                    <p class="card-desc">以下展示自動萃取並對照單價後的完整欄位資料，您可點擊右側圖示單筆刪除。</p>
+
+                    <div class="table-container">
+                        <!-- Placeholder -->
+                        <div class="table-placeholder" id="table-placeholder">
+                            <div class="placeholder-icon">
+                                <i data-lucide="table-properties"></i>
+                            </div>
+                            <p>等待上傳 Packing List 與 EI 檔案以產生預覽表單</p>
+                        </div>
+
+                        <!-- Real Table -->
+                        <table class="data-table" id="data-table" style="display: none;">
+                            <thead>
+                                <tr>
+                                    <th>日期</th>
+                                    <th>提單號碼</th>
+                                    <th>STO號碼</th>
+                                    <th>SSD 料號</th>
+                                    <th>數量</th>
+                                    <th>單價</th>
+                                    <th>單位</th>
+                                    <th>storage loc</th>
+                                    <th>淨重</th>
+                                    <th>毛重</th>
+                                    <th>箱數</th>
+                                    <th class="action-column">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body">
+                                <!-- Dynamic rows inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>
