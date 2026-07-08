@@ -537,7 +537,7 @@ function parseSDSM(plText, eiText) {
     let currentPartNumber = "";
     
     // Details line regex for SDSM: BOM COO Qty AssemblyFee / EA ExtAssemblyFee UnitPrice ExtPrice NetWeight
-    const invoiceItemRegex = /^\d+\s+[A-Z]{2}\s+([\d,]+)\s+[\d\.]+\s*\/\s*(?:EA|PC)\s+[\d\.,]+\s+([\d\.]+)\s+[\d\.,]+/i;
+    const invoiceItemRegex = /^\d+\s+[A-Z]{2}\s+([\d,]+)\s+[\d\.]+\s*\/\s*(?:EA|PC)?\s*[\d\.,]+\s+([\d\.]+)\s+[\d\.,]+/i;
 
     // Header line: 1 54-82-20056-128G EA 1,597
     const invoiceHeaderRegex = /^\d+\s+([\w\-]+)\s+(?:EA|PC)\s+([\d,]+)/i;
