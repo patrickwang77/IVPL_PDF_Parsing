@@ -98,6 +98,7 @@
                     <div class="status-indicator">
                         <div class="status-dot idel" id="status-dot"></div>
                         <span id="status-text">請先載入 PDF 檔案...</span>
+                        <div id="detected-format-badge" class="format-badge-ui" style="display: none;"></div>
                     </div>
 
                     <!-- Progress Bar -->
@@ -157,19 +158,8 @@
                         <!-- Real Table -->
                         <table class="data-table" id="data-table" style="display: none;">
                             <thead>
-                                <tr>
-                                    <th>日期</th>
-                                    <th>提單號碼</th>
-                                    <th>STO號碼</th>
-                                    <th>SSD 料號</th>
-                                    <th>數量</th>
-                                    <th>單價</th>
-                                    <th>單位</th>
-                                    <th>storage loc</th>
-                                    <th>淨重</th>
-                                    <th>毛重</th>
-                                    <th>箱數</th>
-                                    <th class="action-column">操作</th>
+                                <tr id="table-header-row">
+                                    <!-- Dynamic headers will be inserted here -->
                                 </tr>
                             </thead>
                             <tbody id="table-body">
