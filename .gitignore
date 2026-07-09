@@ -1,5 +1,6 @@
 # Dependency directories
 lib/
+Temp/
 
 # Generated files
 PDF-Extractor-Standalone.html
