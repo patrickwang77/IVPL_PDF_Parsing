@@ -708,3 +708,141 @@ body {
     color: #ef4444;
     border: 1px solid rgba(239, 68, 68, 0.3);
 }
+
+/* Tabs Container */
+.tabs-container {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.5rem;
+    border-radius: 16px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+.tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 0.8rem 1.5rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.tab-btn i {
+    width: 18px;
+    height: 18px;
+}
+.tab-btn:hover {
+    color: var(--text-light);
+    background: rgba(255, 255, 255, 0.05);
+}
+.tab-btn.active {
+    color: #fff;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+}
+
+/* Dual Drop Container */
+.dual-drop-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+.sdss-drop-zone {
+    border: 2px dashed rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.02);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+}
+.sdss-drop-zone:hover, .sdss-drop-zone.dragover {
+    border-color: var(--primary-color);
+    background: rgba(139, 92, 246, 0.05);
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.1);
+}
+.sdss-drop-zone i {
+    width: 32px;
+    height: 32px;
+    color: var(--text-muted);
+    transition: all 0.3s ease;
+}
+.sdss-drop-zone:hover i, .sdss-drop-zone.dragover i {
+    color: var(--primary-light);
+    transform: translateY(-3px);
+}
+.sdss-drop-zone h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-light);
+    margin: 0;
+}
+.sdss-drop-zone p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+.sdss-file-status {
+    width: 100%;
+    margin-top: 0.5rem;
+    text-align: left;
+}
+.sdss-file-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    padding: 0.4rem 0.6rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    margin-bottom: 0.4rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.sdss-file-item.excel-type {
+    border-color: rgba(16, 185, 129, 0.3);
+    background: rgba(16, 185, 129, 0.05);
+}
+.sdss-file-item i {
+    width: 14px;
+    height: 14px;
+}
+.sdss-file-item .file-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text-light);
+}
+.sdss-file-item .btn-remove-file {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+.sdss-file-item .btn-remove-file:hover {
+    color: #ef4444;
+}
+.file-list-scroll {
+    max-height: 150px;
+    overflow-y: auto;
+    width: 100%;
+}

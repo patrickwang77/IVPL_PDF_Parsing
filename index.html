@@ -36,8 +36,18 @@
             </div>
         </header>
 
-        <!-- Main Content Grid -->
-        <main class="app-grid">
+        <!-- Tabs Navigation -->
+        <div class="tabs-container">
+            <button class="tab-btn active" id="tab-btn-matching" onclick="switchTab('matching')">
+                <i data-lucide="layers"></i> 1. PDF 智慧配對 (原版)
+            </button>
+            <button class="tab-btn" id="tab-btn-sdss" onclick="switchTab('sdss')">
+                <i data-lucide="file-spreadsheet"></i> 2. SDSS 對照 (PDF + Excel)
+            </button>
+        </div>
+
+        <!-- Tab 1: PDF Matching (Original) -->
+        <main class="app-grid tab-pane active" id="pane-matching">
             <!-- Left Side: File Uploaders & Control -->
             <div class="control-panel">
                 <div class="glass-card upload-section">
@@ -163,6 +173,145 @@
                                 </tr>
                             </thead>
                             <tbody id="table-body">
+                                <!-- Dynamic rows inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Tab 2: SDSS (PDF + Excel) -->
+        <main class="app-grid tab-pane" id="pane-sdss" style="display: none;">
+            <!-- Left Side: File Uploaders & Control -->
+            <div class="control-panel">
+                <div class="glass-card upload-section">
+                    <h2 class="card-title"><i data-lucide="file-spreadsheet"></i> 載入 SDSS 來源檔案</h2>
+                    <p class="card-desc">請分別拖放或選擇 Packing List (PDF) 與 Invoice 對照檔 (Excel)</p>
+                    
+                    <div class="dual-drop-container">
+                        <!-- PL PDF Uploader -->
+                        <div class="sdss-drop-zone" id="sdss-pl-drop-zone">
+                            <input type="file" id="sdss-pl-file-input" accept=".pdf" multiple style="display: none;">
+                            <i data-lucide="file-text"></i>
+                            <h4>1. 載入 PL PDF 檔案</h4>
+                            <p>拖放或點擊選擇 (可多選)</p>
+                            
+                            <div class="sdss-file-status" id="sdss-pl-status">
+                                <div class="file-list-scroll" id="sdss-pl-file-list">
+                                    <!-- List of PL files -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Invoice Excel Uploader -->
+                        <div class="sdss-drop-zone" id="sdss-invoice-drop-zone">
+                            <input type="file" id="sdss-invoice-file-input" accept=".xlsx,.xls" style="display: none;">
+                            <i data-lucide="sheet"></i>
+                            <h4>2. 載入 Invoice Excel 對照檔</h4>
+                            <p>拖放或點擊選擇 (單一檔案)</p>
+                            
+                            <div class="sdss-file-status" id="sdss-invoice-status">
+                                <!-- Excel filename will appear here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upload Controls -->
+                    <div class="upload-controls-row">
+                        <button class="btn btn-primary btn-run" id="btn-sdss-run" disabled>
+                            <i data-lucide="play"></i> Run (開始對照)
+                        </button>
+                        <button class="btn btn-secondary btn-clear" id="btn-sdss-clear-files" disabled>
+                            <i data-lucide="trash-2"></i> 清除檔案
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Process Status & Export Card -->
+                <div class="glass-card status-section">
+                    <h2 class="card-title"><i data-lucide="cpu"></i> 解析與對照狀態 (SDSS)</h2>
+                    
+                    <div class="status-indicator">
+                        <div class="status-dot idel" id="sdss-status-dot"></div>
+                        <span id="sdss-status-text">請先載入 PDF 與 Excel 檔案...</span>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="progress-container" style="display: none;" id="sdss-progress-container">
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" id="sdss-progress-bar-fill"></div>
+                        </div>
+                        <div class="progress-text-row">
+                            <span id="sdss-progress-detail">準備中...</span>
+                            <span id="sdss-progress-percent">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- Info Box -->
+                    <div class="info-box" id="sdss-info-box">
+                        <i data-lucide="info" class="info-icon"></i>
+                        <p class="info-text" id="sdss-info-text">
+                            請同時載入 1 個或多個 SDSM Packing List PDF 檔與 1 個對照用 Excel 檔案。點擊 Run 將自動計算加權單價並產生對照資料。
+                        </p>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons-group">
+                        <button class="btn btn-primary" id="btn-sdss-export-xlsx" disabled>
+                            <i data-lucide="download"></i> 下載 Excel (XLSX)
+                        </button>
+                        <button class="btn btn-secondary" id="btn-sdss-export-csv" disabled>
+                            <i data-lucide="file-spreadsheet"></i> 下載 CSV 檔 (cp950)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Live Mapped Preview -->
+            <div class="preview-panel">
+                <div class="glass-card preview-card">
+                    <div class="preview-header">
+                        <div class="preview-title-block">
+                            <h2 class="card-title"><i data-lucide="eye"></i> 轉換資料預覽 (SDSS)</h2>
+                            <div class="preview-badge" id="sdss-preview-count" style="display: none;">0 筆資料</div>
+                        </div>
+                        <button class="btn-clear-all" id="btn-sdss-clear-preview" style="display: none;">
+                            <i data-lucide="x-circle"></i> 全部清除
+                        </button>
+                    </div>
+                    <p class="card-desc">以下展示 SDSS PDF + Excel 依據「銷售單號、訂單料號、數量」自動對照單價後的完整 13 欄資料。</p>
+
+                    <div class="table-container">
+                        <!-- Placeholder -->
+                        <div class="table-placeholder" id="sdss-table-placeholder">
+                            <div class="placeholder-icon">
+                                <i data-lucide="table-properties"></i>
+                            </div>
+                            <p>等待上傳 PL PDF 及對應 Excel 檔案以產生預覽表單</p>
+                        </div>
+
+                        <!-- Real Table -->
+                        <table class="data-table" id="sdss-data-table" style="display: none;">
+                            <thead>
+                                <tr>
+                                    <th>日期</th>
+                                    <th>STO #</th>
+                                    <th>Line</th>
+                                    <th>QSS 料號</th>
+                                    <th>數量</th>
+                                    <th>廠商</th>
+                                    <th>預計入庫倉</th>
+                                    <th>出貨指示類型</th>
+                                    <th>AI#</th>
+                                    <th>單價</th>
+                                    <th>淨重</th>
+                                    <th>毛重</th>
+                                    <th>箱數</th>
+                                    <th class="action-column">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sdss-table-body">
                                 <!-- Dynamic rows inserted here -->
                             </tbody>
                         </table>
