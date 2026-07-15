@@ -1173,11 +1173,7 @@ btnSdssRun.addEventListener('click', async () => {
         sdssStatusDot.className = 'status-dot completed';
         sdssStatusText.textContent = `解析對照完成！成功匹配並新增 ${newResultRows.length} 筆資料，累計共 ${sdssResultRows.length} 筆。`;
 
-        // Clear files
-        sdssPlFiles = [];
-        sdssInvoiceFile = null;
-        sdssPlFileInput.value = '';
-        sdssInvoiceFileInput.value = '';
+        // Keep files loaded in UI for manual clearing/swapping
         updateSdssFileUI();
 
         // Check for missing prices

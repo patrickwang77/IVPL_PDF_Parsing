@@ -190,29 +190,29 @@
                     <p class="card-desc">請分別拖放或選擇 Packing List (PDF) 與 Invoice 對照檔 (Excel)</p>
                     
                     <div class="dual-drop-container">
+                        <!-- Invoice Excel Uploader -->
+                        <div class="sdss-drop-zone" id="sdss-invoice-drop-zone">
+                            <input type="file" id="sdss-invoice-file-input" accept=".xlsx,.xls" style="display: none;">
+                            <i data-lucide="sheet"></i>
+                            <h4>1. 載入 Invoice Excel 對照檔</h4>
+                            <p>拖放或點擊選擇 (單一檔案)</p>
+                            
+                            <div class="sdss-file-status" id="sdss-invoice-status">
+                                <!-- Excel filename will appear here -->
+                            </div>
+                        </div>
+
                         <!-- PL PDF Uploader -->
                         <div class="sdss-drop-zone" id="sdss-pl-drop-zone">
                             <input type="file" id="sdss-pl-file-input" accept=".pdf" multiple style="display: none;">
                             <i data-lucide="file-text"></i>
-                            <h4>1. 載入 PL PDF 檔案</h4>
+                            <h4>2. 載入 PL PDF 檔案</h4>
                             <p>拖放或點擊選擇 (可多選)</p>
                             
                             <div class="sdss-file-status" id="sdss-pl-status">
                                 <div class="file-list-scroll" id="sdss-pl-file-list">
                                     <!-- List of PL files -->
                                 </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Invoice Excel Uploader -->
-                        <div class="sdss-drop-zone" id="sdss-invoice-drop-zone">
-                            <input type="file" id="sdss-invoice-file-input" accept=".xlsx,.xls" style="display: none;">
-                            <i data-lucide="sheet"></i>
-                            <h4>2. 載入 Invoice Excel 對照檔</h4>
-                            <p>拖放或點擊選擇 (單一檔案)</p>
-                            
-                            <div class="sdss-file-status" id="sdss-invoice-status">
-                                <!-- Excel filename will appear here -->
                             </div>
                         </div>
                     </div>
