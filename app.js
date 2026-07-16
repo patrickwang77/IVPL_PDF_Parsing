@@ -975,6 +975,45 @@ function updateSdssProgress(percent, text) {
     sdssProgressPercent.textContent = `${percent}%`;
 }
 
+// Helper to recalculate worksheet range for sheet-to-json to avoid invalid dimension metadata
+function recalculateSheetRange(ws) {
+    let minRow = Infinity, maxRow = -Infinity;
+    let minCol = Infinity, maxCol = -Infinity;
+    
+    const keys = Object.keys(ws).filter(k => k[0] !== '!');
+    if (keys.length === 0) return;
+    
+    keys.forEach(key => {
+        const match = key.match(/^([A-Z]+)(\d+)$/);
+        if (match) {
+            const colStr = match[1];
+            const row = parseInt(match[2], 10);
+            
+            let col = 0;
+            for (let i = 0; i < colStr.length; i++) {
+                col = col * 26 + (colStr.charCodeAt(i) - 64);
+            }
+            
+            if (row < minRow) minRow = row;
+            if (row > maxRow) maxRow = row;
+            if (col < minCol) minCol = col;
+            if (col > maxCol) maxCol = col;
+        }
+    });
+    
+    const colNumToStr = (col) => {
+        let str = "";
+        while (col > 0) {
+            let temp = (col - 1) % 26;
+            str = String.fromCharCode(65 + temp) + str;
+            col = Math.floor((col - temp) / 26);
+        }
+        return str;
+    };
+    
+    ws['!ref'] = `${colNumToStr(minCol)}${minRow}:${colNumToStr(maxCol)}${maxRow}`;
+}
+
 // Helper to read Excel using FileReader and SheetJS
 function readExcelInvoice(file) {
     return new Promise((resolve, reject) => {
@@ -985,6 +1024,10 @@ function readExcelInvoice(file) {
                 const workbook = XLSX.read(data, { type: 'array' });
                 const firstSheetName = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[firstSheetName];
+                
+                // Recalculate sheet range to fix incorrect !ref (invalid dimension metadata)
+                recalculateSheetRange(worksheet);
+                
                 const json = XLSX.utils.sheet_to_json(worksheet);
                 resolve(json);
             } catch (err) {
